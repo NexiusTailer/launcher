@@ -54,7 +54,12 @@ async fn main() {
         deeplink::prepare(DEEPLINK_IDENTIFIER);
     }
 
-    if let Err(e) = simple_logging::log_to_file(LOG_FILE_NAME, LevelFilter::Info) {
+    let log_path = env::current_exe()
+        .ok()
+        .and_then(|exe| exe.parent().map(|dir| dir.join(LOG_FILE_NAME)))
+        .unwrap_or_else(|| LOG_FILE_NAME.into());
+
+    if let Err(e) = simple_logging::log_to_file(log_path, LevelFilter::Info) {
         eprintln!("Failed to initialize logging: {}", e);
         exit(1);
     }
